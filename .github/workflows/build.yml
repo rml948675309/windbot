@@ -13,8 +13,7 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Setup .NET Framework 4.8 Developer Pack
-      run: |
-        choco install netfx-4.8-devpack -y
+      run: choco install netfx-4.8-devpack -y
       
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
@@ -25,26 +24,19 @@ jobs:
     - name: Restore NuGet packages
       run: nuget restore WindBot.sln
       
-    - name: Build WindBot
-      run: msbuild WindBot.csproj /p:Configuration=Release /p:Platform="Any CPU" /p:TargetFrameworkVersion=v4.8
+    - name: Build entire solution
+      run: msbuild WindBot.sln /p:Configuration=Release /p:Platform="Any CPU" /t:Build
       
-    - name: Build ExecutorBase
-      run: msbuild ExecutorBase\ExecutorBase.csproj /p:Configuration=Release /p:Platform="Any CPU" /p:TargetFrameworkVersion=v4.8
-      
-    - name: List outputs
+    - name: Find all DLLs and EXEs
       run: |
-        echo "=== WindBot output ==="
-        dir bin\Release
-        echo "=== ExecutorBase output ==="
-        dir ExecutorBase\bin\Release
+        echo "=== Finding all build outputs ==="
+        Get-ChildItem -Path . -Include *.dll,*.exe,*.pdb -Recurse | Where-Object { $_.FullName -like "*\bin\Release\*" } | ForEach-Object { $_.FullName }
       
     - name: Upload compiled files
       uses: actions/upload-artifact@v4
       with:
         name: KewlTune-WindBot-DLLs
         path: |
-          bin/Release/*.dll
-          bin/Release/*.exe
-          bin/Release/*.pdb
-          ExecutorBase/bin/Release/*.dll
-          ExecutorBase/bin/Release/*.pdb
+          **/bin/Release/*.dll
+          **/bin/Release/*.exe
+          **/bin/Release/*.pdb
