@@ -12,37 +12,35 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: List files (debug)
-      run: |
-        echo "=== Root directory ==="
-        dir
-        echo "=== Looking for solution files ==="
-        dir *.sln
-      
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.0.x'
-    
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
+      
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v2
         
     - name: Restore NuGet packages
       run: nuget restore WindBot.sln
       
-    - name: Build with MSBuild
-      run: msbuild WindBot.sln /p:Configuration=Release /p:Platform="Any CPU"
+    - name: Build WindBot (Windows only)
+      run: msbuild Game/WindBot.csproj /p:Configuration=Release /p:Platform="Any CPU"
       
-    - name: List build output (debug)
+    - name: Build ExecutorBase
+      run: msbuild ExecutorBase/ExecutorBase.csproj /p:Configuration=Release /p:Platform="Any CPU"
+      
+    - name: List build output
       run: |
-        echo "=== Looking for build output ==="
-        dir /s *.dll
+        echo "=== WindBot output ==="
+        dir Game\bin\Release
+        echo "=== ExecutorBase output ==="
+        dir ExecutorBase\bin\Release
       
     - name: Upload compiled files
       uses: actions/upload-artifact@v4
       with:
         name: KewlTune-WindBot-DLLs
         path: |
-          **/bin/Release/**/*.dll
-          **/bin/Release/**/*.exe
-          **/bin/Release/**/*.pdb
+          Game/bin/Release/*.dll
+          Game/bin/Release/*.exe
+          Game/bin/Release/*.pdb
+          ExecutorBase/bin/Release/*.dll
+          ExecutorBase/bin/Release/*.pdb
