@@ -2,7 +2,6 @@ name: Build KewlTune WindBot
 
 on:
   push:
-    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -11,24 +10,21 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '6.0.x'
+        dotnet-version: '8.0.x'
         
     - name: Restore dependencies
-      run: dotnet restore WindBot.sln
+      run: dotnet restore
       
     - name: Build
-      run: dotnet build WindBot.sln --configuration Release --no-restore
+      run: dotnet build --configuration Release
       
     - name: Upload compiled DLLs
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: KewlTune-WindBot-DLLs
-        path: |
-          bin/Release/*.dll
-          bin/Release/*.exe
-          bin/Release/*.pdb
+        path: Game/bin/Release/net48/
