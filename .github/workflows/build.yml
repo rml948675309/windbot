@@ -12,19 +12,37 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
+    - name: List files (debug)
+      run: |
+        echo "=== Root directory ==="
+        dir
+        echo "=== Looking for solution files ==="
+        dir *.sln
+      
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
+    
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
         
-    - name: Restore dependencies
-      run: dotnet restore
+    - name: Restore NuGet packages
+      run: nuget restore WindBot.sln
       
-    - name: Build
-      run: dotnet build --configuration Release
+    - name: Build with MSBuild
+      run: msbuild WindBot.sln /p:Configuration=Release /p:Platform="Any CPU"
       
-    - name: Upload compiled DLLs
+    - name: List build output (debug)
+      run: |
+        echo "=== Looking for build output ==="
+        dir /s *.dll
+      
+    - name: Upload compiled files
       uses: actions/upload-artifact@v4
       with:
         name: KewlTune-WindBot-DLLs
-        path: Game/bin/Release/net48/
+        path: |
+          **/bin/Release/**/*.dll
+          **/bin/Release/**/*.exe
+          **/bin/Release/**/*.pdb
