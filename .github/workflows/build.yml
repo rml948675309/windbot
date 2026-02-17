@@ -12,17 +12,34 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Show directory structure
-      run: |
-        echo "=== Root directory ==="
-        dir
-        echo "=== All .csproj files ==="
-        dir /s *.csproj
-        echo "=== All .sln files ==="
-        dir /s *.sln
-      
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
       
     - name: Setup NuGet
       uses: nuget/setup-nuget@v2
+        
+    - name: Restore NuGet packages for solution
+      run: nuget restore WindBot.sln
+      
+    - name: Build WindBot project
+      run: msbuild WindBot.csproj /p:Configuration=Release /p:Platform="Any CPU" /p:OutputPath=bin\Release
+      
+    - name: Build ExecutorBase project
+      run: msbuild ExecutorBase\ExecutorBase.csproj /p:Configuration=Release /p:Platform="Any CPU"
+      
+    - name: List build outputs
+      run: |
+        echo "=== Main WindBot output ==="
+        dir bin\Release
+        echo "=== ExecutorBase output ==="
+        dir ExecutorBase\bin\Release
+      
+    - name: Upload compiled DLLs
+      uses: actions/upload-artifact@v4
+      with:
+        name: KewlTune-WindBot-DLLs
+        path: |
+          bin/Release/*.dll
+          bin/Release/*.exe
+          ExecutorBase/bin/Release/*.dll
+          ExecutorBase/bin/Release/*.pdb
