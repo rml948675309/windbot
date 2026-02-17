@@ -39,4 +39,12 @@ jobs:
         dir ExecutorBase\bin\Release
       
     - name: Upload compiled files
-      uses: actions/upload-arti
+      uses: actions/upload-artifact@v4
+      with:
+        name: KewlTune-WindBot-DLLs
+        path: |
+          bin/Release/*.dll
+          bin/Release/*.exe
+          bin/Release/*.pdb
+          ExecutorBase/bin/Release/*.dll
+          ExecutorBase/bin/Release/*.pdb
