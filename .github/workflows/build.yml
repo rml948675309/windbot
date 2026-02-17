@@ -12,9 +12,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup .NET Framework 4.0 Developer Pack
+    - name: Setup .NET Framework 4.8 Developer Pack
       run: |
-        choco install netfx-4.0-devpack -y
+        choco install netfx-4.8-devpack -y
       
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
@@ -26,10 +26,10 @@ jobs:
       run: nuget restore WindBot.sln
       
     - name: Build WindBot
-      run: msbuild WindBot.csproj /p:Configuration=Release /p:Platform="Any CPU" /p:OutputPath=bin\Release
+      run: msbuild WindBot.csproj /p:Configuration=Release /p:Platform="Any CPU" /p:TargetFrameworkVersion=v4.8
       
     - name: Build ExecutorBase
-      run: msbuild ExecutorBase\ExecutorBase.csproj /p:Configuration=Release /p:Platform="Any CPU"
+      run: msbuild ExecutorBase\ExecutorBase.csproj /p:Configuration=Release /p:Platform="Any CPU" /p:TargetFrameworkVersion=v4.8
       
     - name: List outputs
       run: |
@@ -39,12 +39,4 @@ jobs:
         dir ExecutorBase\bin\Release
       
     - name: Upload compiled files
-      uses: actions/upload-artifact@v4
-      with:
-        name: KewlTune-WindBot-DLLs
-        path: |
-          bin/Release/*.dll
-          bin/Release/*.exe
-          bin/Release/*.pdb
-          ExecutorBase/bin/Release/*.dll
-          ExecutorBase/bin/Release/*.pdb
+      uses: actions/upload-arti
